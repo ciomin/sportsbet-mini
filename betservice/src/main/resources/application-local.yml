@@ -1,4 +1,8 @@
 spring:
+  docker:
+    compose:
+      enabled: false
+
   datasource:
     url: jdbc:postgresql://localhost:5432/bets
     username: postgres
@@ -9,12 +13,16 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: betservice-local
       properties:
         isolation.level: read_committed
+    producer:
+      properties:
+        acks: all
 
 management:
   endpoints:
