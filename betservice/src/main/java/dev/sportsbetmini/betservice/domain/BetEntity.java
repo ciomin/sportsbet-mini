@@ -32,6 +32,7 @@ public class BetEntity {
     public Market getMarket() { return market; }
     public Selection getSelection() { return selection; }
     public BigDecimal getStake() { return stake; }
+    public void setStake(BigDecimal stake) { this.stake = stake; }
     public BigDecimal getPriceAtBet() { return priceAtBet; }
     public BetStatus getStatus() { return status; }
     public OffsetDateTime getPlacedAt() { return placedAt; }
