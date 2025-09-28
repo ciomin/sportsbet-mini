@@ -1,5 +1,6 @@
 package dev.sportsbetmini.betservice.service;
 
+import dev.sportsbetmini.betservice.api.dto.BetResponse;
 import dev.sportsbetmini.betservice.api.dto.PlaceBetRequest;
 import dev.sportsbetmini.betservice.domain.*;
 import dev.sportsbetmini.betservice.repo.*;
@@ -22,7 +23,7 @@ public class BetPlacementService {
     }
 
     @Transactional
-    public BetEntity placeBet(PlaceBetRequest req) {
+    public BetResponse placeBet(PlaceBetRequest req) {
         var user = users.findByEmail(req.userEmail())
                 .orElseGet(() -> users.save(new UserEntity(UUID.randomUUID(), req.userEmail())));
 
@@ -44,6 +45,37 @@ public class BetPlacementService {
                 req.stake(),
                 odds.getPriceDecimal()
         );
-        return bets.save(bet);
+        var saved = bets.save(bet);
+
+        return new BetResponse(
+                saved.getId(),
+                user.getEmail(),
+                saved.getEventId(),
+                saved.getMarket(),
+                saved.getSelection(),
+                saved.getStake(),
+                saved.getPriceAtBet(),
+                saved.getStatus(),
+                saved.getPlacedAt()
+        );
+    }
+
+    public BetResponse getBet(UUID betId) {
+        return bets.findById(betId)
+                .map(b -> {
+                    var user = users.findById(b.getUserId()).orElseThrow();
+                    return new BetResponse(
+                            b.getId(),
+                            user.getEmail(),
+                            b.getEventId(),
+                            b.getMarket(),
+                            b.getSelection(),
+                            b.getStake(),
+                            b.getPriceAtBet(),
+                            b.getStatus(),
+                            b.getPlacedAt()
+                    );
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Bet not found"));
     }
 }

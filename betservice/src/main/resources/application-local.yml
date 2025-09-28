@@ -4,7 +4,7 @@ spring:
       enabled: false
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/bets
+    url: jdbc:postgresql://localhost:55432/bets
     username: postgres
     password: postgres
   jpa:
@@ -15,7 +15,7 @@ spring:
     enabled: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:19092   # <-- use OUTSIDE listener
     consumer:
       group-id: betservice-local
       properties:
