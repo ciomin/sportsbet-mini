@@ -63,9 +63,4 @@ public class BetController {
         betService.deleteBet(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> badRequest(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ErrorResponse.of("BAD_REQUEST", ex.getMessage()));
-    }
 }
