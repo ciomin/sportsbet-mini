@@ -40,4 +40,9 @@ public class GlobalExceptionHandler {
                 ErrorResponse.of("INTERNAL_ERROR", ex.getMessage())
         );
     }
+
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> badCreds(Exception ex) {
+        return ResponseEntity.status(401).body(ErrorResponse.of("UNAUTHORIZED", ex.getMessage()));
+    }
 }
