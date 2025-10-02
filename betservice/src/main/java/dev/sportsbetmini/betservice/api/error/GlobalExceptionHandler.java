@@ -1,4 +1,4 @@
-package dev.sportsbetmini.betservice.api;
+package dev.sportsbetmini.betservice.api.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

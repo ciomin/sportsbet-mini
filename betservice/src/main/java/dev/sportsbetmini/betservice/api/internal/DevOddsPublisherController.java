@@ -1,11 +1,15 @@
-package dev.sportsbetmini.betservice.api;
+package dev.sportsbetmini.betservice.api.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.sportsbetmini.betservice.events.OddsUpdated;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Profile("local")
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/internal/odds")
 public class DevOddsPublisherController {

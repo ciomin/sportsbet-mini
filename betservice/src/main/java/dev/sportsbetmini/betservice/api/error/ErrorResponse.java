@@ -1,4 +1,4 @@
-package dev.sportsbetmini.betservice.api;
+package dev.sportsbetmini.betservice.api.error;
 
 import java.time.OffsetDateTime;
 

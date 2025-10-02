@@ -1,4 +1,4 @@
-package dev.sportsbetmini.betservice.repo;
+package dev.sportsbetmini.betservice.repo.spec;
 
 import dev.sportsbetmini.betservice.domain.BetEntity;
 import dev.sportsbetmini.betservice.domain.BetStatus;

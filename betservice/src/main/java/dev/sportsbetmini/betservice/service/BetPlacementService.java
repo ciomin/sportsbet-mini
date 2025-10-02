@@ -2,7 +2,6 @@ package dev.sportsbetmini.betservice.service;
 
 import dev.sportsbetmini.betservice.api.dto.BetResponse;
 import dev.sportsbetmini.betservice.api.dto.PlaceBetRequest;
-import dev.sportsbetmini.betservice.api.dto.UpdateStakeRequest;
 import dev.sportsbetmini.betservice.domain.*;
 import dev.sportsbetmini.betservice.repo.*;
 import jakarta.transaction.Transactional;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import static dev.sportsbetmini.betservice.repo.BetSpecifications.filter;
+import static dev.sportsbetmini.betservice.repo.spec.BetSpecifications.filter;
 
 @Service
 public class BetPlacementService {
