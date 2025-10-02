@@ -39,3 +39,7 @@ security:
   jwt:
     secret: ${JWT_SECRET:oVLa[\$^{m(8jktl*<DQI'H"r@zZS}g%U]9,y?EXw4dAn:-F>|hv0esWx;)/PO6`}
     ttl-minutes: ${JWT_TTL_MINUTES:60}
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] %-5level %logger{36} - %msg%n"

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -38,6 +39,7 @@ public class BetController {
         return ResponseEntity.ok(betService.getBet(id));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public Page<BetResponse> list(
             @RequestParam(required = false) UUID eventId,
@@ -50,6 +52,7 @@ public class BetController {
         return betService.listBets(eventId, userEmail, status, placedFrom, placedTo, pageable);
     }
 
+    @PreAuthorize("hasRole('USER') and @authz.emailVerified(authentication.name)")
     @PutMapping("/{id}/stake")
     public ResponseEntity<BetResponse> updateStake(
             @PathVariable UUID id,
@@ -58,6 +61,7 @@ public class BetController {
         return ResponseEntity.ok(betService.updateStake(id, body.stake()));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         betService.deleteBet(id);
