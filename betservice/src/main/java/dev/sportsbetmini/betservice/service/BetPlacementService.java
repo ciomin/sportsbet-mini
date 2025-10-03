@@ -28,9 +28,9 @@ public class BetPlacementService {
     }
 
     @Transactional
-    public BetResponse placeBet(PlaceBetRequest req) {
-        var user = users.findByEmail(req.userEmail())
-                .orElseGet(() -> users.save(new UserEntity(UUID.randomUUID(), req.userEmail())));
+    public BetResponse placeBet(String callerEmail, PlaceBetRequest req) {
+        var user = users.findByEmail(callerEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")); // no silent auto-create
 
         var event = events.findById(req.eventId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
@@ -51,20 +51,13 @@ public class BetPlacementService {
                 req.stake(),
                 odds.getPriceDecimal()
         );
-
         var saved = bets.save(bet);
 
-        // Map entity -> DTO here so controller stays thin
         return new BetResponse(
-                saved.getId(),
-                user.getEmail(),
-                saved.getEventId(),
-                saved.getMarket(),
-                saved.getSelection(),
-                saved.getStake(),
-                saved.getPriceAtBet(),
-                saved.getStatus(),
-                saved.getPlacedAt()
+                saved.getId(), user.getEmail(), saved.getEventId(),
+                saved.getMarket(), saved.getSelection(),
+                saved.getStake(), saved.getPriceAtBet(),
+                saved.getStatus(), saved.getPlacedAt()
         );
     }
 
@@ -78,19 +71,21 @@ public class BetPlacementService {
             Pageable pageable
     ) {
         UUID userId = null;
+        String resolvedEmail = null;
+
         if (userEmail != null && !userEmail.isBlank()) {
-            userId = users.findByEmail(userEmail).map(UserEntity::getId).orElse(null);
+            var u = users.findByEmail(userEmail).orElse(null);
+            if (u == null) return Page.empty(pageable);
+            userId = u.getId();
+            resolvedEmail = u.getEmail();
         }
 
-        var spec = filter(eventId, null, status, placedFrom, placedTo);
+        var spec = filter(eventId, userId, status, placedFrom, placedTo);
         var page = bets.findAll(spec, pageable);
 
-        UUID finalUserId = userId;
-        String resolvedEmail = userEmail; // may be null; we’ll fetch when building response
-
+        final String emailForResolvedUser = resolvedEmail;
         return page.map(b -> {
-            var email = (finalUserId != null && finalUserId.equals(b.getUserId()))
-                    ? resolvedEmail
+            var email = (emailForResolvedUser != null) ? emailForResolvedUser
                     : users.findById(b.getUserId()).map(UserEntity::getEmail).orElse("unknown");
             return new BetResponse(
                     b.getId(), email, b.getEventId(),

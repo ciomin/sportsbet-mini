@@ -6,24 +6,30 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.stream.Collectors;
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle validation errors from @Valid
+    public record FieldErrorDto(String field, String message) {}
+    public record ValidationErrorResponse(String code, String message, java.util.List<FieldErrorDto> errors,
+                                          java.time.OffsetDateTime timestamp) {
+        public static ValidationErrorResponse of(String message, java.util.List<FieldErrorDto> errors) {
+            return new ValidationErrorResponse("VALIDATION_ERROR", message, errors, java.time.OffsetDateTime.now());
+        }
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult()
+    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
+        var errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+                .map(err -> new FieldErrorDto(err.getField(), err.getDefaultMessage()))
+                .toList();
 
         return ResponseEntity.badRequest().body(
-                ErrorResponse.of("VALIDATION_ERROR", message)
+                ValidationErrorResponse.of("Validation failed", errors)
         );
     }
+
 
     // Handle illegal args (business rule violations)
     @ExceptionHandler(IllegalArgumentException.class)

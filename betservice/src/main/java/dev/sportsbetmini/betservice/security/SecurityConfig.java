@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
@@ -32,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/internal/**").hasRole("ADMIN")
 
                         // Bets must be authenticated (ROLE_USER)
-                        .requestMatchers("/bets/**", "/me").hasRole("USER")
+                        .requestMatchers("/bets/**", "/users/me").hasRole("USER")
 
                         // Everything else: authenticated
                         .anyRequest().authenticated()
@@ -40,6 +43,19 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwt), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        var config = new CorsConfiguration();
+        config.setAllowedOrigins(java.util.List.of("http://localhost:3000", "http://localhost:5173"));
+        config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedHeaders(java.util.List.of("*"));
+        config.setAllowCredentials(true);
+
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
 

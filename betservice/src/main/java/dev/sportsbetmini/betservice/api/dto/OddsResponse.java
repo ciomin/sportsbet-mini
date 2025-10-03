@@ -2,14 +2,15 @@ package dev.sportsbetmini.betservice.api.dto;
 
 import dev.sportsbetmini.betservice.domain.Market;
 import dev.sportsbetmini.betservice.domain.Selection;
-import jakarta.validation.constraints.Positive;
 
-import java.util.UUID;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
-public record PlaceBetRequest(
+public record OddsResponse(
         UUID eventId,
         Market market,
         Selection selection,
-        @Positive BigDecimal stake
+        BigDecimal price,
+        OffsetDateTime updatedAt
 ) {}

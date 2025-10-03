@@ -3,7 +3,6 @@ package dev.sportsbetmini.betservice.api;
 import dev.sportsbetmini.betservice.api.dto.BetResponse;
 import dev.sportsbetmini.betservice.api.dto.PlaceBetRequest;
 import dev.sportsbetmini.betservice.api.dto.UpdateStakeRequest;
-import dev.sportsbetmini.betservice.domain.BetEntity;
 import dev.sportsbetmini.betservice.domain.BetStatus;
 import dev.sportsbetmini.betservice.service.BetPlacementService;
 import jakarta.validation.Valid;
@@ -13,9 +12,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -29,11 +28,13 @@ public class BetController {
         this.betService = betService;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<BetResponse> place(@Valid @RequestBody PlaceBetRequest req) {
-        return ResponseEntity.ok(betService.placeBet(req));
+    public ResponseEntity<BetResponse> place(Authentication auth, @Valid @RequestBody PlaceBetRequest req) {
+        return ResponseEntity.ok(betService.placeBet(auth.getName(), req)); // pass caller email
     }
 
+    @PreAuthorize("hasRole('USER') and @authz.canReadBet(#id, authentication)")
     @GetMapping("/{id}")
     public ResponseEntity<BetResponse> get(@PathVariable UUID id) {
         return ResponseEntity.ok(betService.getBet(id));

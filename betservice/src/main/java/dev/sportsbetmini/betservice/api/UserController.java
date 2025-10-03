@@ -11,7 +11,7 @@ import java.util.Map;
 public class UserController {
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     public Map<String, Object> me(Authentication auth) {
         return Map.of(
                 "sub", auth.getName(),

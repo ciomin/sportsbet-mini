@@ -14,27 +14,18 @@ public final class BetSpecifications {
 
     public static Specification<BetEntity> filter(
             UUID eventId,
-            String userEmail,
+            UUID userId,
             BetStatus status,
             OffsetDateTime placedFrom,
             OffsetDateTime placedTo
     ) {
         return (root, q, cb) -> {
             var predicates = new ArrayList<Predicate>();
-
-            if (eventId != null) {
-                predicates.add(cb.equal(root.get("eventId"), eventId));
-            }
-            if (status != null) {
-                predicates.add(cb.equal(root.get("status"), status));
-            }
-            if (placedFrom != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("placedAt"), placedFrom));
-            }
-            if (placedTo != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("placedAt"), placedTo));
-            }
-            // userEmail joins via user_id => fetch email in service; to keep it simple we’ll filter by email in service layer
+            if (eventId != null) predicates.add(cb.equal(root.get("eventId"), eventId));
+            if (userId != null)   predicates.add(cb.equal(root.get("userId"), userId));
+            if (status != null)   predicates.add(cb.equal(root.get("status"), status));
+            if (placedFrom != null) predicates.add(cb.greaterThanOrEqualTo(root.get("placedAt"), placedFrom));
+            if (placedTo != null)   predicates.add(cb.lessThanOrEqualTo(root.get("placedAt"), placedTo));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
